@@ -5,8 +5,8 @@
 // See the README for more information.
 
 (function($) {
-var YEAR = 60 * 60 * 24 * 365; // a year in seconds
-var SHORT_DELAY = 20;          // a delay of twenty seconds
+var COOKIE_LIVE = 60 * 30; 		// 30 minutes
+var SHORT_DELAY = 20;          	// a delay of twenty seconds
 var subsession;
 var subsession_breadcrumb;
 
@@ -55,8 +55,8 @@ $(document).ready(function() {
     subsession = '' + counter;
     subsession_breadcrumb = '' + counter;
   }
-  setCookie('subsession', '', YEAR);
-  setCookie('subsession_breadcrumb', '', YEAR);
+  setCookie('subsession', '', COOKIE_LIVE);
+  setCookie('subsession_breadcrumb', '', COOKIE_LIVE);
   //$('#subsession').text(subsession);
   //$('#subsession_breadcrumb').text(subsession_breadcrumb);
   $('a').mousedown(onMouseDown);

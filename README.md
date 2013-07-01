@@ -65,3 +65,12 @@ As there is no concept of 'tabs' in HTTP/1.1, this code is a large hack.  It wor
 They are short lived so that tabs which are opened manually (i.e. not middle-clicked) and have a URL entered do not erroneously get associated with an existing subsession.
 
 If your site often takes more than 20 seconds to load pages, you may want to increase the 'SHORT_DELAY' constant.
+
+
+Todo:
+-----
+
+Refresh page? Submit page?
+	- window.name...?
+
+Ajax Call
