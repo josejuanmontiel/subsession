@@ -14,7 +14,7 @@ var subsession_breadcrumb;
 function setCookie(c_name, value, exsecs) {
   var exdate = new Date();
   exdate.setSeconds(exdate.getSeconds() + exsecs);
-  var c_value = escape(value) + ((exsecs == null) ? "" : "; expires=" + exdate.toUTCString());
+  var c_value = escape(value) + ((exsecs == null) ? "" : "; expires=" + exdate.toUTCString()) +";path=/;";
   document.cookie = c_name + "=" + c_value;
 }
 
