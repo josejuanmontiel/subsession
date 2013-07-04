@@ -1,14 +1,13 @@
-// Copyright Thorcom Systems Ltd. 2011, All Rights Reserved.
-// Released under the MIT licence.
-
-// SubSession is a method of tracking tabs within web applications.
-// See the README for more information.
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
 
 (function($) {
 var COOKIE_LIVE = 60 * 30; 		// 30 minutes
-var SHORT_DELAY = 20;          	// a delay of twenty seconds
-var subsession;
-var subsession_breadcrumb;
+var subsession='';
+var subsession_breadcrumb='';
 
 // Sets a cookie, exsecs is time to expiry, in seconds.
 function setCookie(c_name, value, exsecs) {
@@ -29,62 +28,51 @@ function getCookie(c_name) {
       return unescape(y);
     }
   }
+  return '';
 }
 
-// This gets the counter from (cookie) storage, increments the value and saves it back to storage.  
-// If there is no counter, it creates one.
-function incCounter() {
-  var counterStr = getCookie('subsession_counter');
-  var counter;
-  if (!counterStr) {
-    counter = 1;
-  } else {
-    counter = parseInt(counterStr, 10);
-    counter++;
-  }
-  setCookie('subsession_counter', '' + counter); 
-  return counter;
+function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
 }
 
 // This runs when the page loads.
 $(document).ready(function() {
-  subsession = getCookie('subsession');
-  subsession_breadcrumb = getCookie('subsession_breadcrumb');
-  if (!subsession) {
-    var counter = incCounter();
-    subsession = '' + counter;
-    subsession_breadcrumb = '' + counter;
-  }
-  setCookie('subsession', '', COOKIE_LIVE);
-  setCookie('subsession_breadcrumb', '', COOKIE_LIVE);
-  //$('#subsession').text(subsession);
-  //$('#subsession_breadcrumb').text(subsession_breadcrumb);
-  $('a').mousedown(onMouseDown);
-  $(window).unload(onUnload);
+	if (window.name=='') {
+		subsession = new Date().getTime();
+		window.name = subsession; 
+		
+		var old_subsession = getCookie('subsession');
+		setCookie('subsession', subsession, COOKIE_LIVE);
+		subsession_breadcrumb = getCookie('subsession_breadcrumb');
+		
+		// primera vez, o tiene solo un elemento...
+		if (subsession_breadcrumb == '') {
+			subsession_breadcrumb = subsession;
+			setCookie('subsession_breadcrumb', subsession_breadcrumb, COOKIE_LIVE);
+		} else if (!subsession_breadcrumb.endsWith(subsession)) {
+//			subsession_breadcrumb = subsession_breadcrumb + "/" + subsession;
+			subsession_breadcrumb = old_subsession + "/" + subsession;
+			setCookie('subsession_breadcrumb', subsession_breadcrumb, COOKIE_LIVE);
+		}
+	} 
 });
 
-// This runs when a new page is being loaded.
-function onUnload() {
-  console.log("onUnload");
-  setCookie('subsession', subsession, SHORT_DELAY);
-  setCookie('subsession_breadcrumb', subsession_breadcrumb, SHORT_DELAY);
-};
+$(window).load(function () {
+	 //if IsRefresh cookie exists
+	 var IsRefresh = getCookie("IsRefresh");
+	 if (IsRefresh != null && IsRefresh != "") {
+	    //cookie exists then you refreshed this page(F5, reload button or right click and reload)
+		setCookie('subsession', subsession, COOKIE_LIVE);
+	    DeleteCookie("IsRefresh");
+	 }
+	 else {
+	    //cookie doesnt exists then you landed on this page
+	    setCookie("IsRefresh", "true", 1);
+	 }
+	})
 
-// This runs when a link is clicked.  
-// Left clicks do the smaes as unload.
-// Middle clicks (open in new tab) and context clicks give a shirt window during which
-// a newly opened tab will be a child of this subsession.
-// FIXME: add the behaviour to Context Menu >> Open In New Tab properly.
-function onMouseDown(e) {
-  //console.log("e.which:", e.which, "e.button:", e.button);
-  if (e.which === 1) {
-    onUnload();
-  } else if (e.which === 2 || e.which === 3) {
-    var counter = incCounter();
-    setCookie('subsession', counter, SHORT_DELAY);
-    setCookie('subsession_breadcrumb', subsession_breadcrumb + "/" + counter, SHORT_DELAY);
-  }
-};
+$(document).click(function() {
+	setCookie('subsession', window.name, COOKIE_LIVE);
+});
 
 })(jQuery);
-
