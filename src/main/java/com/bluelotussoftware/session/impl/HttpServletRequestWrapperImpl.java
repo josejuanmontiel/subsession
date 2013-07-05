@@ -3,6 +3,7 @@ package com.bluelotussoftware.session.impl;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
  
 /**
@@ -13,11 +14,16 @@ import javax.servlet.http.HttpSession;
  */
 public class HttpServletRequestWrapperImpl extends HttpServletRequestWrapper {
  
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 	private String subsession;
 	private String subsessionBreadcrumb;
 	
-    public HttpServletRequestWrapperImpl(HttpServletRequest request) {
-        super(request);
+    public HttpServletRequestWrapperImpl(HttpServletRequest request, HttpServletResponse response) {
+    	super(request);
+    	this.request = request;
+    	this.response = response;
+        
     }
  
 	/**
@@ -55,7 +61,7 @@ public class HttpServletRequestWrapperImpl extends HttpServletRequestWrapper {
     			}
     		}
         	
-            return new HttpSessionWrapperImpl(this.subsession, subsessionBreadcrumb, session);
+            return new HttpSessionWrapperImpl(session, request, response, this.subsession, subsessionBreadcrumb);
         } else {
             return session;
         }

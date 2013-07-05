@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.bluelotussoftware.session.HttpSessionWrapper;
@@ -17,8 +19,8 @@ public class HttpSessionWrapperImpl extends HttpSessionWrapper {
  
     public static final String INFO = "HttpSessionWrapperImpl/1.0";
  
-    public HttpSessionWrapperImpl(String subsession, String subsessionBreadcrumb, HttpSession session) {
-        super(subsession, subsessionBreadcrumb, session);
+    public HttpSessionWrapperImpl(HttpSession session, HttpServletRequest request, HttpServletResponse response, String subsession, String subsessionBreadcrumb) {
+        super(session, request, response, subsession, subsessionBreadcrumb);
     }
  
     public List<String> getAttributesNames() {

@@ -21,7 +21,11 @@
 package com.bluelotussoftware.session;
 
 import java.util.Enumeration;
+
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
@@ -35,6 +39,8 @@ import javax.servlet.http.HttpSessionContext;
 public class HttpSessionWrapper implements HttpSession {
 
 	private HttpSession session;
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 	private String subsession;
 	private String subsessionBreadcrumb;
 
@@ -43,9 +49,11 @@ public class HttpSessionWrapper implements HttpSession {
 	 * 
 	 * @param session
 	 */
-	public HttpSessionWrapper(String subsession, String subsessionBreadcrumb, HttpSession session) {
-		this.subsession = subsession;
+	public HttpSessionWrapper(HttpSession session, HttpServletRequest request, HttpServletResponse response, String subsession, String subsessionBreadcrumb) {
 		this.session = session;
+		this.request = request;
+		this.response = response;
+		this.subsession = subsession;
 		this.subsessionBreadcrumb = subsessionBreadcrumb;
 		
 		// Take the parent
@@ -65,18 +73,36 @@ public class HttpSessionWrapper implements HttpSession {
 			Enumeration<String> sessionAttrs = getAttributeNames();
 			while(sessionAttrs.hasMoreElements()) {
 				String sessionAttrName = sessionAttrs.nextElement();
-				String sessionAttrNameWithOutPrefix = sessionAttrName.substring(prefix.length());
-
 				// Copy values from inherit session...
 				if (sessionAttrName.startsWith(prefix)) {
+					String sessionAttrNameWithOutPrefix = sessionAttrName.substring(prefix.length());	
 					session.setAttribute(subsession+"#"+sessionAttrNameWithOutPrefix, session.getAttribute(sessionAttrName));
 				}
-				
+			}
+			
+			// Replace breadcrum, deleting parent...
+			Cookie cookie = getCookie(request, "subsession_breadcrumb");
+			if (cookie != null) {
+			    cookie.setValue(subsession);
+			    cookie.setPath("/");
+			    response.addCookie(cookie);
 			}
 		}
 		
 	}
 
+	public static Cookie getCookie(HttpServletRequest request, String name) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie;
+                }
+            }
+        }
+
+        return null;
+    }
+	
     /**
      * {@inheritDoc}
      */

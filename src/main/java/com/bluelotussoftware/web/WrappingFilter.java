@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.bluelotussoftware.session.HttpSessionWrapper;
@@ -49,7 +50,8 @@ public class WrappingFilter implements Filter {
             throws IOException, ServletException {
     	
         HttpServletRequest hsr = (HttpServletRequest) request;
-        HttpServletRequestWrapperImpl hsrwi = new HttpServletRequestWrapperImpl(hsr);
+        HttpServletResponse hsres = (HttpServletResponse) response;
+        HttpServletRequestWrapperImpl hsrwi = new HttpServletRequestWrapperImpl(hsr, hsres);
         
 		/*
 		 * use the ServletContext.log method to log filter messages
