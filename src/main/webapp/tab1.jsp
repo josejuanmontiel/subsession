@@ -9,9 +9,12 @@
 <h2>Tab1</h2>
 <%
 	// User define value, to share with new tab...
-	if (session.getAttribute("custom")==null) {
+	String customReq = request.getParameter("custom");
+	String customSess = (String)session.getAttribute("custom");
+	if (customSess==null || customSess.equals("null") || (customReq!=null && !customReq.equals(customSess))) {
 		session.setAttribute("custom", request.getParameter("custom"));	
 	}
+
 
 	// When this tab was open...
 	if (session.getAttribute("tabopened")==null) {
