@@ -63,23 +63,23 @@ if (typeof String.prototype.endsWith !== 'function') {
 		} 
 	});
 
-	// Refresh subsession value when click...
-	$(document).click(function() {
-		setCookie('subsession', window.name, COOKIE_LIVE);
-	});
+	// Refresh subsession value when focus...
+	$(window).on("blur focus", function(e) {
+	    var prevType = $(this).data("prevType");
 
-	// Refresh subsession value when page refresh...
-	$(window).load(function() {
-		// if IsRefresh cookie exists
-		var IsRefresh = getCookie("IsRefresh");
-		if (IsRefresh != null && IsRefresh != "") {
-			setCookie('subsession', subsession, COOKIE_LIVE);
-			// cookie exists then you refreshed this page(F5, reload button or right click and reload)
-			DeleteCookie("IsRefresh");
-		} else {
-			// cookie doesnt exists then you landed on this page
-			setCookie("IsRefresh", "true", 1);
-		}
-	});
+	    if (prevType != e.type) {   //  reduce double fire issues
+	        switch (e.type) {
+	            case "blur":
+	                // do work
+	                break;
+	            case "focus":
+	                // do work
+	            	setCookie('subsession', window.name, COOKIE_LIVE);
+	                break;
+	        }
+	    }
+
+	    $(this).data("prevType", e.type);
+	})	
 
 })(jQuery);
