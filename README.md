@@ -1,7 +1,7 @@
 SubSession
 ==========
 
-Warning - this only works for a subset of use cases.  Do not use this without understanding the compromises you will need to make.
+Warning - this "fork" approach only works with cookies enabled and it's based on "window.name".  Do not use this without understanding the compromises you will need to make.
 
 Tabs in browsers have given web users a new mental model which is at odds with how HTTP works.
 
@@ -44,33 +44,29 @@ SubSession is implemented as a jQuery plugin.  Simply including the JavaScript f
 
     <script src="/js/jquery.subsession.js" type="text/javascript"> </script> 
 
-SubSession gives your web application two new cookies, *subsession* and *subsession_breadcrumb*.  SubSession does not include any server-side functionality - you'll have to develop this yourself, for your framework.
+SubSession gives your web application two new cookies, *subsession* and *subsession_breadcrumb*.  
+
+SubSession include a "java server-side functionality" as example of use, and complement to "copy session" values to new tab. If use other languaje, you'll have to develop this yourself, for your languaje.
 
 The *subsession* cookie contains small integer value which is guaranteed to be unique for that user's current session.  e.g. 7.
 
-The *subsession_breadcrumb* cookie contains the path to the current subsession. e.g. 4/7 shows that the user middle-clicked from subsession 4, creating subsession 7.
+The *subsession_breadcrumb* cookie contains, when the server "reset", the reference to the last used tab. It's used internal to "copy values" from "out-coming tab".
 
 
 Server-side patterns:
 ---------------------
 
-SubSession storage is typically a hash-map of the SessionID concatenated with the subsession ID.  If a setting cannot be found in HashMap(SessionID+subsession) it is idomatic to walk back up the *subsession_breadcrumb* until a setting is found in a 'parent' tab.
+SubSession storage is typically a hash-map of the SessionID concatenated with the subsession ID.
 
 
 Bugs:
 -----
 
-As there is no concept of 'tabs' in HTTP/1.1, this code is a large hack.  It works by setting short lived cookies, using them as a message to the page that is about to be opened.  
+As it's based on window.name... i think this solve, bugs from code forked.
 
-They are short lived so that tabs which are opened manually (i.e. not middle-clicked) and have a URL entered do not erroneously get associated with an existing subsession.
-
-If your site often takes more than 20 seconds to load pages, you may want to increase the 'SHORT_DELAY' constant.
-
+Tell me if find some "bug"...
 
 Todo:
 -----
 
-Refresh page? Submit page?
-	- window.name...?
-
-Ajax Call
+Use another implementation to store session and not "subsession+"#"+key" ...
